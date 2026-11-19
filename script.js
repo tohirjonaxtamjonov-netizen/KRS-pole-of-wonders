@@ -6,15 +6,15 @@ function tokenize(a){const s=norm(a),out=[];for(let i=0;i<s.length;i++){const tw
 const W={50:35/3,100:25/3,300:5,500:5,0:5,B:1.25,L:1.25,E1:1.25,E2:1.25};
 const ORDER=[50,"B",100,300,"L",50,500,0,100,"E1",50,"B",300,100,"L",500,"B",300,"E2","L"];
 const INFO={
- 50:{t:"50",f:"50 POINTS",r:"COMMON",c:"#1faa59",g:"#2be37c"},
- 100:{t:"100",f:"100 POINTS",r:"UNCOMMON",c:"#2f7cf6",g:"#5aa0ff"},
- 300:{t:"300",f:"300 POINTS",r:"RARE",c:"#8e44ec",g:"#b57bff"},
- 500:{t:"500",f:"500 POINTS",r:"LEGENDARY",c:"url(#gold)",g:"#f5d142"},
- 0:{t:"0",f:"0 POINTS",r:"ZERO",c:"#4a4f5c",g:"#9aa0ad"},
- B:{t:"BANKRUPT",f:"BANKRUPT",r:"ARCANE",c:"#050505",g:"#ffffff"},
- L:{t:"+1 LETTER",f:"+1 LETTER",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"},
- E1:{t:"+1 CHANCE",f:"+1 EXTRA CHANCE",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"},
- E2:{t:"+2 CHANCES",f:"+2 EXTRA CHANCES",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"}};
+ 50:{t:"50",f:"50 POINTS",r:"COMMON",c:"#c9ced6",x:"#14213d",g:"#e3e7ee"},
+ 100:{t:"100",f:"100 POINTS",r:"UNCOMMON",c:"#5bc8ff",x:"#06223a",g:"#7fd8ff"},
+ 300:{t:"300",f:"300 POINTS",r:"RARE",c:"#2358e0",x:"#fff",g:"#5b8cff"},
+ 500:{t:"500",f:"500 POINTS",r:"LEGENDARY",c:"url(#gold)",x:"#1a1400",g:"#f5d142"},
+ 0:{t:"0",f:"0 POINTS",r:"ZERO",c:"#c9ced6",x:"#14213d",g:"#e3e7ee"},
+ B:{t:"BANKRUPT",f:"BANKRUPT",r:"ARCANE",c:"#050505",x:"#fff",g:"#ffffff"},
+ L:{t:"+1 LETTER",f:"+1 LETTER",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"},
+ E1:{t:"+1 CHANCE",f:"+1 EXTRA CHANCE",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"},
+ E2:{t:"+2 CHANCES",f:"+2 EXTRA CHANCES",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"}};
 function buildSectors(){const span=360/ORDER.length;return ORDER.map((k,i)=>({key:k,p:W[k],a0:i*span,a1:(i+1)*span}));}
 function pickSector(sec,r){let acc=0;for(const s of sec){acc+=s.p;if(r*100<acc)return s;}return sec[sec.length-1];}
 //#PURE-END
@@ -25,7 +25,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const T=CONFIG.teamNames,Q=QUESTIONS,SEC=buildSectors();
 const wheel=$("wheel"),spinBtn=$("spinBtn"),wordBtn=$("wordBtn"),nextBtn=$("nextBtn"),kb=$("keyboard"),wordEl=$("word"),statusEl=$("status");
-let S={qi:0,overall:[0,0,0],round:[0,0,0],active:0,opps:3,turns:0,revealed:new Set(),tokens:[],phase:"spin",pending:null,last:null,lit:false};
+let S={qi:0,overall:[0,0,0],round:[0,0,0],active:0,opps:3,revealed:new Set(),tokens:[],phase:"spin",pending:null,last:null,lit:false};
 let rot=0;
 
 /* ---------- wheel drawing ---------- */
@@ -34,7 +34,7 @@ function drawWheel(){
  const R=190;let h='<defs><linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="-190" y1="-190" x2="190" y2="190"><stop offset="0" stop-color="#fff6c7"/><stop offset=".3" stop-color="#f5d142"/><stop offset=".55" stop-color="#b8901a"/><stop offset=".78" stop-color="#ffe98a"/><stop offset="1" stop-color="#d9b52c"/></linearGradient></defs>';
  SEC.forEach(s=>{const i=INFO[s.key],[x0,y0]=pt(R,s.a0),[x1,y1]=pt(R,s.a1),big=(s.a1-s.a0)>180?1:0,mid=(s.a0+s.a1)/2;
   const arc=(s.a1-s.a0)*Math.PI/180*R*.72,fs=Math.max(9,Math.min(20,arc*.8));
-  const dark=s.key===500?"#1a1400":"#fff";
+  const dark=i.x;
   h+=`<path d="M0,0L${x0},${y0}A${R},${R} 0 ${big} 1 ${x1},${y1}Z" fill="${i.c}" stroke="#0a0f24" stroke-width="1.5"/>`;
   h+=`<g transform="rotate(${mid.toFixed(2)})"><text transform="translate(0,${-(R-12)}) rotate(90)" font-size="${fs.toFixed(1)}" font-weight="800" fill="${dark}" dominant-baseline="central" font-family="Segoe UI,Arial,sans-serif">${i.t}</text></g>`;});
  h+=`<circle r="${R}" fill="none" stroke="url(#gold)" stroke-width="7"/><circle r="26" fill="#0a0f24" stroke="url(#gold)" stroke-width="5"/>`;
@@ -52,13 +52,13 @@ function onResult(s){
  $("result").innerHTML=`<div class="res" style="--rc:${inf.g}"><b>${inf.f}</b><small>${inf.r}</small></div>`;
  if(typeof k==="number"){S.pending=k;S.phase="guess";say(`${n}: ${inf.f}. Choose a letter!`);ui();}
  else if(k==="B"){S.opps--;if(S.opps>0)S.opps--;say(`BANKRUPT! ${n} loses this spin and one more opportunity.`);settle();}
- else if(k==="L"){S.opps--;S.phase="free";say(`${n}: choose any letter — it will be revealed for free.`);ui();}
+ else if(k==="L"){S.opps--;S.phase="free";say(`${n}: tap any empty box in the word to reveal that letter for free.`);ui();}
  else{const add=k==="E1"?1:2;S.opps+=add-1;say(`${n} gets +${add} extra ${add===1?"chance":"chances"}!`);settle();}
 }
 
 /* ---------- round flow ---------- */
 function startRound(){
- const q=Q[S.qi];S.tokens=tokenize(q.answer);S.revealed=new Set();S.round=[0,0,0];S.active=0;S.opps=3;S.turns=0;S.phase="spin";S.pending=null;S.last=null;S.lit=false;
+ const q=Q[S.qi];S.tokens=tokenize(q.answer);S.revealed=new Set();S.round=[0,0,0];S.active=0;S.opps=3;S.phase="spin";S.pending=null;S.last=null;S.lit=false;
  $("question").textContent=q.question;$("result").innerHTML="";nextBtn.hidden=true;wordBtn.hidden=false;
  buildKeys();say(`${T[0]} starts. Spin the wheel!`);ui();
 }
@@ -69,8 +69,7 @@ function settle(){
  S.phase="spin";ui();
 }
 function nextTurn(){
- S.turns++;if(S.turns>=3)return endRound(-1);
- S.active=(S.active+1)%3;S.opps=3;S.phase="spin";S.pending=null;say(`Turn passes to ${T[S.active]}.`);ui();
+  S.active=(S.active+1)%3;S.opps=3;S.phase="spin";S.pending=null;say(`Turn passes to ${T[S.active]}.`);ui();
 }
 function endRound(solver,viaWord){
  S.phase="ended";S.lit=true;
@@ -90,7 +89,7 @@ function buildKeys(){
 function reveal(u){S.revealed.add(u);S.last=u;}
 function pick(u){
  if(S.revealed.has(u))return;
- if(S.phase==="guess")guess(u);else if(S.phase==="free")freeLetter(u);
+ if(S.phase==="guess")guess(u);
 }
 function guess(u){
  const hit=S.tokens.includes(u),pts=S.pending,n=T[S.active];S.phase="busy";S.opps--;S.pending=null;
@@ -99,10 +98,10 @@ function guess(u){
  settle();
 }
 function freeLetter(u){
- S.phase="busy";
- if(S.tokens.includes(u)){reveal(u);say(`Free letter ${LABEL(u)} revealed!`);}else say(`Free letter ${LABEL(u)} is not in the word.`);
- settle();
+ if(S.phase!=="free"||S.revealed.has(u)||!S.tokens.includes(u))return;
+ S.phase="busy";reveal(u);say(`Free letter ${LABEL(u)} revealed everywhere it appears!`);settle();
 }
+wordEl.onclick=e=>{const b=e.target.closest(".box[data-u]");if(b&&S.phase==="free")freeLetter(b.dataset.u);};
 
 /* ---------- dialogs and full-word guess ---------- */
 function dlg(text,opt,cb){
@@ -130,7 +129,7 @@ function renderWord(){
  const maxLen=Math.max(...words.map(w=>w.length));
  const w=wordEl.clientWidth-30,n=S.tokens.length-(words.length-1)*.3,one=w/(n*1.12);
  const bs=one>=44?Math.min(68,one,innerHeight*.075):Math.max(24,Math.min(68,w/(maxLen*1.12),innerHeight*.058));wordEl.style.setProperty("--bs",bs+"px");
- wordEl.innerHTML=words.map(w=>`<div class="wd">${w.map(u=>{const show=S.revealed.has(u)||S.lit||!UNITS.includes(u);return`<div class="box${show&&!S.lit?" on":""}${S.lit?" lit":""}${show&&u===S.last&&!S.lit?" pop":""}">${show?LABEL(u):""}</div>`;}).join("")}</div>`).join('<div class="gap"></div>');
+ wordEl.innerHTML=words.map(w=>`<div class="wd">${w.map(u=>{const show=S.revealed.has(u)||S.lit||!UNITS.includes(u);return`<div ${show?"":`data-u="${u}" `}class="box${show&&!S.lit?" on":""}${S.lit?" lit":""}${show&&u===S.last&&!S.lit?" pop":""}">${show?LABEL(u):""}</div>`;}).join("")}</div>`).join('<div class="gap"></div>');
 }
 function ui(){
  $("title").textContent=CONFIG.gameTitle;document.title=CONFIG.gameTitle;
@@ -138,7 +137,7 @@ function ui(){
  const act=S.phase!=="ended"&&S.phase!=="over";
  $("teams").innerHTML=T.map((n,i)=>`<div class="team${act&&i===S.active?" active":""}"><h3>${esc(n)}</h3><div>Overall Score: <b>${S.overall[i]}</b></div><div>Round Score: <b>${S.round[i]}</b></div><div class="opp">${act&&i===S.active?"Opportunities left: "+S.opps:""}</div></div>`).join("");
  spinBtn.disabled=S.phase!=="spin";wordBtn.disabled=S.phase!=="spin";
- const ready=S.phase==="guess"||S.phase==="free";kb.classList.toggle("ready",ready);kb.classList.toggle("locked",!ready);
+ const ready=S.phase==="guess";wordEl.classList.toggle("pick",S.phase==="free");kb.classList.toggle("ready",ready);kb.classList.toggle("locked",!ready);
  kb.querySelectorAll(".key").forEach(b=>{const r=S.revealed.has(b.dataset.u)||(S.lit&&S.tokens.includes(b.dataset.u));b.classList.toggle("clean",S.revealed.has(b.dataset.u));b.disabled=S.revealed.has(b.dataset.u);});
  renderWord();
 }

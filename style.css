@@ -77,3 +77,7 @@ main>section{background:var(--panel);border:1px solid rgba(56,214,255,.25);borde
 @keyframes float{50%{transform:translateY(-10px)}}
 @keyframes shine{to{background-position:200% 200%}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#word.pick .box:not(.on){cursor:pointer;border-color:#ff4b5c;animation:pulse2 1s infinite alternate}
+#word.pick .box:not(.on):hover{background:rgba(255,75,92,.28)}
+@keyframes pulse2{from{box-shadow:0 0 4px #ff4b5c}to{box-shadow:0 0 18px #ff4b5c}}
