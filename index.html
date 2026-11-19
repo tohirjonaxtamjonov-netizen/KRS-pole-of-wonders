@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KRS — Pole of Wonders</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game">
+  <header>
+    <span id="roundInfo"></span>
+    <h1 id="title"></h1>
+    <button id="finishBtn" class="btn small">FINISH GAME</button>
+  </header>
+  <aside id="left">
+    <div id="wheelBox"><div id="pointer"></div><svg id="wheel" viewBox="-200 -200 400 400"></svg></div>
+    <button id="spinBtn" class="btn big">SPIN</button>
+    <div id="result"></div>
+  </aside>
+  <main>
+    <section id="top"><div id="question"></div><div id="word"></div></section>
+    <section id="teams"></section>
+    <section id="bottom">
+      <div id="status"></div>
+      <div id="keyboard"></div>
+      <div class="actions">
+        <button id="wordBtn" class="btn">GUESS THE WORD</button>
+        <button id="nextBtn" class="btn big" hidden>NEXT ROUND ▶</button>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="modal" hidden><div class="box"><p id="mText"></p><input id="mInput" hidden autocomplete="off" spellcheck="false"><div class="mBtns"><button id="mYes" class="btn">YES</button><button id="mNo" class="btn ghost">CANCEL</button></div></div></div>
+<div id="podium" hidden></div>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
