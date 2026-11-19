@@ -15,7 +15,7 @@ const INFO={
  L:{t:"+1 LETTER",f:"+1 LETTER",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"},
  E1:{t:"+1 CHANCE",f:"+1 EXTRA CHANCE",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"},
  E2:{t:"+2 CHANCES",f:"+2 EXTRA CHANCES",r:"ARCANE",c:"#a31fa0",g:"#ff4de0"}};
-function buildSectors(){let a=0;return ORDER.map(k=>{const p=W[k],span=p*3.6,s={key:k,p,a0:a,a1:a+span};a+=span;return s;});}
+function buildSectors(){const span=360/ORDER.length;return ORDER.map((k,i)=>({key:k,p:W[k],a0:i*span,a1:(i+1)*span}));}
 function pickSector(sec,r){let acc=0;for(const s of sec){acc+=s.p;if(r*100<acc)return s;}return sec[sec.length-1];}
 //#PURE-END
 
