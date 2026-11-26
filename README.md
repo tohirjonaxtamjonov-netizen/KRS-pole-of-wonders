@@ -16,7 +16,7 @@ Open `config.js`, change only the text inside the quotes, save. Scores and rules
 ## 3. Replace or add questions
 Open `questions.js`. Each question looks like this:
 `{ question: "Your question?", answer: "ANSWER" },`
-Copy a line to add a question, delete a line to remove one. Every line ends with a comma except the last. Answers may contain spaces. Write answers in capital letters using only the keyboard letters (A B D E F G H I J K L M N O P Q R S T U V X Y Z, O‘, G‘, SH, CH, NG). The number of rounds equals the number of questions.
+Copy a line to add a question, delete a line to remove one. Every line ends with a comma except the last. Answers may contain spaces. Write answers in capital letters using only the 26 letters A–Z (the keyboard is QWERTY). Spaces are allowed. The number of rounds equals the number of questions.
 
 ## 4. Test locally
 Put all files in one folder and double-click `index.html`. Use Chrome, Edge, or Firefox. Press F11 for full screen on the projector.

@@ -1,8 +1,9 @@
 //#PURE-START
-const UNITS=["A","B","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z","O'","G'","SH","CH","NG"];
-const LABEL=u=>u==="O'"?"O‘":u==="G'"?"G‘":u;
+const ROWS=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
+const UNITS=ROWS.join("").split("");
+const LABEL=u=>u;
 const norm=s=>String(s).toUpperCase().replace(/[\u2018\u2019\u02BB\u02BC\u0060\u00B4']/g,"'").replace(/\s+/g," ").trim();
-function tokenize(a){const s=norm(a),out=[];for(let i=0;i<s.length;i++){const two=s.substr(i,2);if(["O'","G'","SH","CH","NG"].includes(two)){out.push(two);i++;}else out.push(s[i]);}return out;}
+function tokenize(a){return Array.from(norm(a));}
 const W={50:35/3,100:25/3,300:5,500:5,0:5,B:1.25,L:1.25,E1:1.25,E2:1.25};
 const ORDER=[50,"B",100,300,"L",50,500,0,100,"E1",50,"B",300,100,"L",500,"B",300,"E2","L"];
 const INFO={
@@ -82,8 +83,7 @@ nextBtn.onclick=()=>{if(S.qi>=Q.length-1)showPodium();else{S.qi++;startRound();}
 
 /* ---------- letters ---------- */
 function buildKeys(){
- const dots=[[14,16],[46,15],[10,33],[50,35],[19,57],[41,58],[24,11],[38,10]].map(d=>`<circle class="dot" cx="${d[0]}" cy="${d[1]}" r="2.1"/>`).join("");
- kb.innerHTML=UNITS.map(u=>`<button class="key" data-u="${u}" aria-label="${LABEL(u)}"><svg viewBox="0 0 60 70"><path class="tooth" d="M10 8C18 2 24 8 30 8S42 2 50 8C58 14 56 28 52 38C50 48 50 64 44 66C38 68 36 52 30 52C24 52 22 68 16 66C10 64 10 48 8 38C4 28 2 14 10 8Z"/>${dots}</svg><span>${LABEL(u)}</span></button>`).join("");
+ kb.innerHTML=ROWS.map(r=>`<div class="kr">${r.split("").map(u=>`<button class="key" data-u="${u}" aria-label="${u}"><svg viewBox="0 0 60 70"><path class="tooth" d="M10 8C18 2 24 8 30 8S42 2 50 8C58 14 56 28 52 38C50 48 50 64 44 66C38 68 36 52 30 52C24 52 22 68 16 66C10 64 10 48 8 38C4 28 2 14 10 8Z"/></svg><span>${u}</span></button>`).join("")}</div>`).join("");
  kb.onclick=e=>{const b=e.target.closest(".key");if(b)pick(b.dataset.u);};
 }
 function reveal(u){S.revealed.add(u);S.last=u;}
