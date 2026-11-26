@@ -58,7 +58,7 @@ function onResult(s){
  if(typeof k==="number"){S.pending=k;S.phase="guess";say(`${n}: ${inf.f}. Choose a letter!`);ui();}
  else if(k==="B"){S.opps--;if(S.opps>0)S.opps--;say(`BANKRUPT! ${n} loses this spin and one more opportunity.`);settle();}
  else if(k==="L"){S.opps--;S.phase="free";say(`${n}: tap any empty box in the word to reveal that letter for free.`);ui();}
- else{const add=k==="E1"?1:2;S.opps+=add-1;say(`${n} gets +${add} extra ${add===1?"chance":"chances"}!`);settle();}
+ else{const add=k==="E1"?1:2;S.opps+=add;S.pending=0;S.phase="guess";say(`${n} gets +${add} extra ${add===1?"chance":"chances"}! Choose a letter (no points for this one).`);ui();}
 }
 
 /* ---------- round flow ---------- */
@@ -97,7 +97,7 @@ function pick(u){
 }
 function guess(u){
  const hit=S.tokens.includes(u),pts=S.pending,n=T[S.active];S.phase="busy";S.opps--;S.pending=null;
- if(hit){reveal(u);S.round[S.active]+=pts;say(`✔ ${LABEL(u)} is in the word! ${n} earns ${pts} points.`);}
+ if(hit){reveal(u);S.round[S.active]+=pts;say(`✔ ${LABEL(u)} is in the word! ${pts?n+" earns "+pts+" points.":"No points for this letter."}`);}
  else{const k=kb.querySelector(`[data-u="${u}"]`);k.classList.add("bad");setTimeout(()=>k.classList.remove("bad"),450);say(`✘ ${LABEL(u)} is not in the word.`);}
  settle();
 }
