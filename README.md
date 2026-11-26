@@ -13,6 +13,9 @@ A classroom game for 3 teams. Open `index.html` in a browser and play. No instal
 ## 2. Change the title and team names
 Open `config.js`, change only the text inside the quotes, save. Scores and rules are not affected.
 
+### Change the wheel chances
+In `config.js`, edit the numbers under `wheelChances`. They are the percent chance of each result, and they should add up to 100 (if not, the game scales them to 100). The wheel always keeps 20 equal-size sectors.
+
 ## 3. Replace or add questions
 Open `questions.js`. Each question looks like this:
 `{ question: "Your question?", answer: "ANSWER" },`

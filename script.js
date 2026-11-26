@@ -4,7 +4,11 @@ const UNITS=ROWS.join("").split("");
 const LABEL=u=>u;
 const norm=s=>String(s).toUpperCase().replace(/[\u2018\u2019\u02BB\u02BC\u0060\u00B4']/g,"'").replace(/\s+/g," ").trim();
 function tokenize(a){return Array.from(norm(a));}
-const W={50:35/3,100:25/3,300:5,500:5,0:5,B:1.25,L:1.25,E1:1.25,E2:1.25};
+const DEFAULT_CHANCES={"50":26,"100":18,"300":17,"500":11,"0":5,"BANKRUPT":3,"+1 LETTER":10,"+1 EXTRA CHANCE":6,"+2 EXTRA CHANCES":4};
+const COUNT={50:3,100:3,300:3,500:2,0:1,B:3,L:3,E1:1,E2:1};
+const KEYMAP={"50":50,"100":100,"300":300,"500":500,"0":0,"BANKRUPT":"B","+1 LETTER":"L","+1 EXTRA CHANCE":"E1","+2 EXTRA CHANCES":"E2"};
+function makeW(cfg){const w={};let tot=0;for(const n in KEYMAP){let v=Number(cfg&&cfg[n]);if(!(v>=0))v=DEFAULT_CHANCES[n];w[KEYMAP[n]]=v;tot+=v;}
+ if(!(tot>0))return makeW(DEFAULT_CHANCES);for(const k in w)w[k]=w[k]/tot*100/COUNT[k];return w;}
 const ORDER=[50,"B",100,300,"L",50,500,0,100,"E1",50,"B",300,100,"L",500,"B",300,"E2","L"];
 const INFO={
  50:{t:"50",f:"50 POINTS",r:"COMMON",c:"#c9ced6",x:"#14213d",g:"#e3e7ee"},
@@ -16,7 +20,7 @@ const INFO={
  L:{t:"+1 LETTER",f:"+1 LETTER",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"},
  E1:{t:"+1 CHANCE",f:"+1 EXTRA CHANCE",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"},
  E2:{t:"+2 CHANCES",f:"+2 EXTRA CHANCES",r:"ARCANE",c:"#d6202f",x:"#fff",g:"#ff4b5c"}};
-function buildSectors(){const span=360/ORDER.length;return ORDER.map((k,i)=>({key:k,p:W[k],a0:i*span,a1:(i+1)*span}));}
+function buildSectors(W){const span=360/ORDER.length;return ORDER.map((k,i)=>({key:k,p:W[k],a0:i*span,a1:(i+1)*span}));}
 function pickSector(sec,r){let acc=0;for(const s of sec){acc+=s.p;if(r*100<acc)return s;}return sec[sec.length-1];}
 //#PURE-END
 
@@ -24,7 +28,7 @@ function pickSector(sec,r){let acc=0;for(const s of sec){acc+=s.p;if(r*100<acc)r
 'use strict';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const T=CONFIG.teamNames,Q=QUESTIONS,SEC=buildSectors();
+const T=CONFIG.teamNames,Q=QUESTIONS,SEC=buildSectors(makeW(CONFIG.wheelChances||DEFAULT_CHANCES));
 const wheel=$("wheel"),spinBtn=$("spinBtn"),wordBtn=$("wordBtn"),nextBtn=$("nextBtn"),kb=$("keyboard"),wordEl=$("word"),statusEl=$("status");
 let S={qi:0,overall:[0,0,0],round:[0,0,0],active:0,opps:3,revealed:new Set(),tokens:[],phase:"spin",pending:null,last:null,lit:false};
 let rot=0;
